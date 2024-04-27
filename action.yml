@@ -1,5 +1,5 @@
 name: "gpt translator"
-description: "action to help translate changed file, it uses the open powershell module to do this, it can use openai service or azure openai service."
+description: "use openai or azure openai to translate changed file to one or more languages."
 inputs:
   openai_api_key:
     description: "openai api key"
@@ -35,7 +35,11 @@ runs:
         Install-Module -Name code365scripts.openai
         Import-Module code365scripts.openai
         $env:files | ConvertFrom-Json | ForEach-Object { 
-          $file = $_ -replace $env:from, $env:to;
-          New-Item -Path $file -ItemType File -Force;
-          gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)}
+          $langs = $env:to_language -split ","
+          foreach($lang in $langs){
+            $env:to = $lang
+            $file = $_ -replace $env:from, $env:to;
+            New-Item -Path $file -ItemType File -Force;
+            gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)}
+          }
         }
