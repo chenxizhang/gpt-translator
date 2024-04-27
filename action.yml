@@ -5,7 +5,7 @@ inputs:
     description: "openai api key, both OpenAI service and Azure OpenAI Service use the same parameter, and we highly recommeneded you to store this key in the secrets."
     required: true
   files:
-    description: 'files to translate, if there are multiple files, you can set them in a json array. like ["file1.txt","file2.txt"]'
+    description: 'files to translate. You can use glob patterns to match multiple files. for example, docs/zh/*.md'
     required: true
   systemPrompt:
     description: "system prompt"
@@ -31,14 +31,19 @@ inputs:
   commit:
     description: "commit the translated files to the repository"
     type: boolean
-    default: false
+    default: true
 runs:
   using: composite
   steps:
+    - id: changed-files
+      name: changed-files
+      uses: knu/changed-files@v1.0.0
+      with:
+        paths: ${{inputs.files}}
     - name: translate
       shell: pwsh
       env:
-        files: ${{inputs.files}}
+        files: ${{steps.changed-files.outputs.matched_files_json}}
         system: ${{inputs.systemPrompt}}
         openai_api_key: ${{inputs.openai_api_key}}
         from: ${{inputs.from_language}}
