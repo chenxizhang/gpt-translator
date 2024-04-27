@@ -35,7 +35,7 @@ runs:
         Install-Module -Name code365scripts.openai
         Import-Module code365scripts.openai
         $env:files | ConvertFrom-Json | ForEach-Object { 
-          $langs = $env:to_language -split ","
+          $langs = $env:to -split ","
           foreach($lang in $langs){
             $env:to = $lang
             $file = $_ -replace $env:from, $env:to;
