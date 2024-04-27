@@ -24,14 +24,12 @@ inputs:
     default: gpt-4-turbo
   useAzure:
     description: "If you are using Azure OpenAI Service, set this parameter to true, or 1."
-    type: boolean
-    default: false
+    default: 'false'
   endpoint:
     description: "if you are using Azure OpenAI Service, set this parameter to the endpoint of your deployment."
   commit:
     description: "commit the translated files to the repository"
-    type: boolean
-    default: true
+    default: 'true'
 runs:
   using: composite
   steps:
