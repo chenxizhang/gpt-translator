@@ -64,5 +64,5 @@ runs:
           }
         }
     - name: commit
-      if: ${{inputs.commit == true}}
+      if: ${{inputs.commit =='true'}}
       uses: stefanzweifel/git-auto-commit-action@v5
