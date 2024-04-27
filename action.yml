@@ -27,6 +27,9 @@ inputs:
     default: false
   endpoint:
     description: "if you are using Azure OpenAI Service, set this parameter to the endpoint of your deployment."
+  commit:
+    description: "commit the translated files to the repository"
+    default: false
 runs:
   using: composite
   steps:
@@ -58,3 +61,6 @@ runs:
             }
           }
         }
+    - name: commit
+      if: ${{inputs.commit}}
+      uses: stefanzweifel/git-auto-commit-action@v5
