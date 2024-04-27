@@ -1,22 +1,22 @@
-name: 'gpt translator'
-description: 'action to help translate changed file, it uses the open powershell module to do this, it can use openai service or azure openai service.'
+name: "gpt translator"
+description: "action to help translate changed file, it uses the open powershell module to do this, it can use openai service or azure openai service."
 inputs:
   openai_api_key:
-    description: 'openai api key'
+    description: "openai api key"
     required: true
   files:
-    description: 'files to translate'
+    description: "files to translate"
     required: true
   systemPrompt:
-    description: 'system prompt'
+    description: "system prompt"
     required: true
-    default: You have me to translate the content to English, in professional style.You mustn't change the content structure and anything else, you just translate the content based on your language skill.
+    default: You have me to translate the content from {{from_language}} to {{to_language}}, in professional style.You mustn't change the content structure and anything else, you just translate the content based on your language skill.
   from_language:
-    description: 'from language'
+    description: "from language"
     required: true
     default: zh
   to_language:
-    description: 'to language'
+    description: "to language"
     required: true
     default: en
 runs:
@@ -28,12 +28,14 @@ runs:
         files: ${{inputs.files}}
         system: ${{inputs.systemPrompt}}
         openai_api_key: ${{inputs.openai_api_key}}
+        from: ${{inputs.from_language}}
+        to: ${{inputs.to_language}}
       run: |
         Set-PSRepository -InstallationPolicy Trusted -Name PSGallery
         Install-Module -Name code365scripts.openai
         Import-Module code365scripts.openai
         $env:files | ConvertFrom-Json | ForEach-Object { 
-          $file = $_ -replace "zh", "en";
+          $file = $_ -replace $env:from, $env:to;
           New-Item -Path $file -ItemType File -Force;
-          chat -system $env:system -prompt $_ -api_key $env:openai_api_key | Out-File $file;
-        }        
+          gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)}
+        }
