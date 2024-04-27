@@ -5,7 +5,7 @@ inputs:
     description: "openai api key, both OpenAI service and Azure OpenAI Service use the same parameter, and we highly recommeneded you to store this key in the secrets."
     required: true
   files:
-    description: "files to translate"
+    description: 'files to translate, if there are multiple files, you can set them in a json array. like ["file1.txt","file2.txt"]'
     required: true
   systemPrompt:
     description: "system prompt"
@@ -52,10 +52,9 @@ runs:
             $file = $_ -replace $env:from, $env:to;
             New-Item -Path $file -ItemType File -Force;
             if($env:useAzure.toLower() -eq "true" -or $env:useAzure -eq "1"){
-              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)} -azure -model $env:model -endpoint $env:endpoint
+              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)} -azure -model $env:model -endpoint $env:endpoint -verbose
             }else{
-              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)} -model $env:model
+              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)} -model $env:model -verbose
             }
-            
           }
         }
