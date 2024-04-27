@@ -2,7 +2,7 @@ name: "gpt translator"
 description: "use openai or azure openai to translate changed file to one or more languages."
 inputs:
   openai_api_key:
-    description: "openai api key"
+    description: "openai api key, both OpenAI service and Azure OpenAI Service use the same parameter, and we highly recommeneded you to store this key in the secrets."
     required: true
   files:
     description: "files to translate"
@@ -16,9 +16,17 @@ inputs:
     required: true
     default: zh
   to_language:
-    description: "to language"
+    description: "to language(s), you can set one or more languages in a time, separate by ,"
     required: true
     default: en
+  modelOrdeployment:
+    description: "The gpt model you want to use, like gpt-4-turbo, gpt-3.5-turbo. if you are using Azure OpenAI,set the deployment name here."
+    default: gpt-4-turbo
+  useAzure:
+    description: "If you are using Azure OpenAI Service, set this parameter to true, or 1."
+    default: false
+  endpoint:
+    description: "if you are using Azure OpenAI Service, set this parameter to the endpoint of your deployment."
 runs:
   using: composite
   steps:
@@ -30,6 +38,9 @@ runs:
         openai_api_key: ${{inputs.openai_api_key}}
         from: ${{inputs.from_language}}
         to: ${{inputs.to_language}}
+        model: ${{inputs.modelOrdeployment}}
+        useAzure: ${{inputs.useAzure}}
+        endpoint: ${{inputs.endpoint}}
       run: |
         Set-PSRepository -InstallationPolicy Trusted -Name PSGallery
         Install-Module -Name code365scripts.openai
@@ -40,6 +51,11 @@ runs:
             $env:to = $lang
             $file = $_ -replace $env:from, $env:to;
             New-Item -Path $file -ItemType File -Force;
-            gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)}
+            if($env:useAzure.toLower() -eq "true" -or $env:useAzure -eq "1"){
+              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)} -azure -model $env:model -endpoint $env:endpoint
+            }else{
+              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)} -model $env:model
+            }
+            
           }
         }
