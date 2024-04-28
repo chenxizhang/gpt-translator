@@ -10,7 +10,7 @@ inputs:
   systemPrompt:
     description: "system prompt"
     required: true
-    default: "You help me to translate the content from {{from_language}} to {{to_language}}, in {{style}} style. You mustn't change the content structure and anything else, you just translate the content based on your language skill but consider the rules described here (if present)\n{{rules}}"
+    default: "You help me to translate the content from {{from_language}} to {{to_language}}, in {{style}} style. You mustn't change the content structure and anything else, you just translate the content based on your language skill."
   from_language:
     description: "from language"
     required: true
@@ -35,7 +35,7 @@ inputs:
     default: professional
   rules:
     description: "The rules of the translation, like don't change the structure, don't change the meaning, etc."
-    default: "don't change the structure, don't change the meaning"
+    default: ""
 runs:
   using: composite
   steps:
