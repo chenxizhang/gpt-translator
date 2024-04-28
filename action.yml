@@ -72,10 +72,15 @@ runs:
             $file = $_ -replace $env:from, $env:to;
             New-Item -Path $file -ItemType File -Force;
             $context =@{from_language=$($env:from);to_language=$($env:to);style=$($env:style);user_specific_rules=$($env:user_specific_rules)}
-            if($env:useAzure.toLower() -eq "true" -or $env:useAzure -eq "1"){
-              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -azure -model $env:model -endpoint $env:endpoint -verbose
-            }else{
-              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -model $env:model -verbose
+            try{
+              if($env:useAzure.toLower() -eq "true" -or $env:useAzure -eq "1"){
+                gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -azure -model $env:model -endpoint $env:endpoint -verbose
+              }else{
+                gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -model $env:model -verbose
+              }
+            }
+            catch{
+              Write-Error $_
             }
           }
         }
