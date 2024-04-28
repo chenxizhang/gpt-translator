@@ -10,10 +10,7 @@ inputs:
   systemPrompt:
     description: "system prompt"
     required: true
-    default: |-
-      You help me to translate the content from {{from_language}} to {{to_language}}, in {{style}} style. 
-      You mustn't change the content structure and anything else, you just translate the content based on your language skill but consider the rules described here (if present).
-      {{rules}}
+    default: "You help me to translate the content from {{from_language}} to {{to_language}}, in {{style}} style. You mustn't change the content structure and anything else, you just translate the content based on your language skill but consider the rules described here (if present)\n{{rules}}"
   from_language:
     description: "from language"
     required: true
