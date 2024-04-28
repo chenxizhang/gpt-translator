@@ -5,18 +5,18 @@ inputs:
     description: "openai api key, both OpenAI service and Azure OpenAI Service use the same parameter, and we highly recommeneded you to store this key in the secrets."
     required: true
   files:
-    description: 'files to translate. You can use glob patterns to match multiple files. for example, docs/zh/*.md'
+    description: "files to translate. You can use glob patterns to match multiple files. for example, docs/zh/*.md"
     required: true
   systemPrompt:
     description: "system prompt"
     required: true
-    default: You have me to translate the content from {{from_language}} to {{to_language}}, in professional style.You mustn't change the content structure and anything else, you just translate the content based on your language skill.
+    default: You help me to translate the content from {{from_language}} to {{to_language}}, in {{style}} style. You mustn't change the content structure and anything else, you just translate the content based on your language skill but consider the rules described here (if present) - {{rules}}.
   from_language:
     description: "from language"
     required: true
     default: zh
   to_language:
-    description: "to language(s), you can set one or more languages in a time, separate by ,"
+    description: "to language(s), you can set one or more languages in a time, separate by comma(,)."
     required: true
     default: en
   modelOrdeployment:
@@ -24,12 +24,17 @@ inputs:
     default: gpt-4-turbo
   useAzure:
     description: "If you are using Azure OpenAI Service, set this parameter to true, or 1."
-    default: 'false'
+    default: "false"
   endpoint:
     description: "if you are using Azure OpenAI Service, set this parameter to the endpoint of your deployment."
   commit:
     description: "commit the translated files to the repository"
-    default: 'true'
+    default: "true"
+  style:
+    description: "The style of the translation, like formal, informal, friendly, professional, etc."
+    default: professional
+  rules:
+    description: "The rules of the translation, like don't change the structure, don't change the meaning, etc."
 runs:
   using: composite
   steps:
@@ -49,6 +54,8 @@ runs:
         model: ${{inputs.modelOrdeployment}}
         useAzure: ${{inputs.useAzure}}
         endpoint: ${{inputs.endpoint}}
+        style: ${{inputs.style}}
+        rules: ${{inputs.rules}}
       run: |
         Set-PSRepository -InstallationPolicy Trusted -Name PSGallery
         Install-Module -Name code365scripts.openai
@@ -59,10 +66,11 @@ runs:
             $env:to = $lang
             $file = $_ -replace $env:from, $env:to;
             New-Item -Path $file -ItemType File -Force;
+            $context = @{from_language=$($env:from);to_language=$($env:to);style=$($env:style);rules=$($env:rules)}
             if($env:useAzure.toLower() -eq "true" -or $env:useAzure -eq "1"){
-              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)} -azure -model $env:model -endpoint $env:endpoint -verbose
+              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -azure -model $env:model -endpoint $env:endpoint -verbose
             }else{
-              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to)} -model $env:model -verbose
+              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -model $env:model -verbose
             }
           }
         }
