@@ -12,6 +12,7 @@ inputs:
     required: true
     default: |
       You help me to translate the content from {{from_language}} to {{to_language}}, in {{style}} style. 
+
       You mustn't change the content structure and anything else, you just translate the content based on your language skill but consider the rules described here (if present).
 
       {{rules}}
@@ -72,18 +73,10 @@ runs:
             $env:to = $lang
             $file = $_ -replace $env:from, $env:to;
             New-Item -Path $file -ItemType File -Force;
-            
-            $context = [PSCustomObject]@{
-              from_language=$($env:from)
-              to_language=$($env:to)
-              style=$($env:style)
-              rules=$($env:rules)
-            }
-
             if($env:useAzure.toLower() -eq "true" -or $env:useAzure -eq "1"){
-              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -azure -model $env:model -endpoint $env:endpoint -verbose
+              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to);style=$($env:style);rules=$($env:rules)} -azure -model $env:model -endpoint $env:endpoint -verbose
             }else{
-              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -model $env:model -verbose
+              gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context @{from_language=$($env:from);to_language=$($env:to);style=$($env:style);rules=$($env:rules)} -model $env:model -verbose
             }
           }
         }
