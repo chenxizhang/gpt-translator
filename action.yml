@@ -13,6 +13,8 @@ inputs:
     default: |
       You help me to translate the content from {{from_language}} to {{to_language}}, in {{style}} style. 
       You mustn't change the content structure and anything else, you just translate the content based on your language skill.
+      You also follow the below rules if present.
+      {{rules}}
   from_language:
     description: "from language"
     required: true
