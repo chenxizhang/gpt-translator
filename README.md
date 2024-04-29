@@ -27,7 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: translate
-        uses: chenxizhang/gpt-translator@v2
+        uses: chenxizhang/gpt-translator@v1
         with:
           openai_api_key: ${{secrets.OPENAI_API_KEY}}
           files: docs/zh/*.md
@@ -55,7 +55,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: translate
-        uses: chenxizhang/gpt-translator@v2
+        uses: chenxizhang/gpt-translator@v1
         with:
           openai_api_key: ${{secrets.OPENAI_API_KEY_AZURE}}
           files: docs/zh/*.md
@@ -86,7 +86,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: translate
-        uses: chenxizhang/gpt-translator@v2
+        uses: chenxizhang/gpt-translator@v1
         with:
           openai_api_key: ${{secrets.OPENAI_API_KEY}}
           files: docs/zh/*.md
@@ -118,7 +118,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: translate
-        uses: chenxizhang/gpt-translator@v2
+        uses: chenxizhang/gpt-translator@v1
         with:
           openai_api_key: ${{secrets.OPENAI_API_KEY}}
           files: docs/zh/*.md
@@ -146,7 +146,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: translate
-        uses: chenxizhang/gpt-translator@v2
+        uses: chenxizhang/gpt-translator@v1
         with:
           openai_api_key: ${{secrets.OPENAI_API_KEY}}
           files: docs/zh/*.md
