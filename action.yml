@@ -5,22 +5,22 @@ inputs:
     description: "openai api key, both OpenAI service and Azure OpenAI Service use the same parameter, and we highly recommeneded you to store this key in the secrets."
     required: true
   files:
-    description: "files to translate. You can use glob patterns to match multiple files. for example, docs/zh/*.md"
+    description: "files to translate. You can use glob patterns to match multiple files. for example, docs/zh/*.md. Please note, this action will only translate those that files are changed in the pull request or push event."
     required: true
   systemPrompt:
-    description: "system prompt"
+    description: "system prompt for OpenAI service. You can set it directly here, or reference to a file (like system_prompt.md) in the repository, or use a URL to get the system prompt(like https://yourwebsite.com/system.md), you can even use a template from prompt library (like lib:gpt-translator-md). This is the magic from the OpenAI PowerShell Module (https://github.com/chenxizhang/openai-powershell). For all the kinds of prompt, you can specific a placeholder of variable in the prompt, like {{to_language}}, then you can replace the value during the runtime."
     required: true
     default: |-
       You help me to translate the content from {{from_language}} to {{to_language}}, in {{style}} style. 
       You mustn't change the content structure and anything else, you just translate the content based on your language skill.
       You also follow the below user specific rules (especially for this doc format or the context) if present.
-      {{user_specific_rules}}
+      {{rules}}
   from_language:
-    description: "from language"
+    description: "from language, you can set one language in a time. You can use the language code like zh, en, fr, etc, or zh-cn, en-us, fr-fr, etc. Please make sure the language code is in the path of the file, for eaxmple, docs/zh/*.md, the language code is zh."
     required: true
     default: zh
   to_language:
-    description: "to language(s), you can set one or more languages in a time, separate by comma(,)."
+    description: "to language(s), you can set one or more languages in a time, separate by comma(,).You can use the language code like zh, en, fr, etc, or zh-cn, en-us, fr-fr, etc. The translated files will have the same file name, but placed in the target language folder. For example, if the file is docs/zh/*.md, and the to_language is en, the translated file will be docs/en/*.md."
     required: true
     default: en
   modelOrdeployment:
@@ -37,7 +37,7 @@ inputs:
   style:
     description: "The style of the translation, like formal, informal, friendly, professional, etc."
     default: professional
-  user_specific_rules:
+  rules:
     description: "The rules of the translation, like don't change the structure, don't change the meaning, etc."
     default: ""
 runs:
@@ -60,7 +60,7 @@ runs:
         useAzure: ${{inputs.useAzure}}
         endpoint: ${{inputs.endpoint}}
         style: ${{inputs.style}}
-        user_specific_rules: ${{inputs.user_specific_rules}}
+        rules: ${{inputs.rules}}
       run: |
         Set-PSRepository -InstallationPolicy Trusted -Name PSGallery
         Install-Module -Name code365scripts.openai
@@ -71,7 +71,7 @@ runs:
             $env:to = $lang
             $file = $_ -replace $env:from, $env:to;
             New-Item -Path $file -ItemType File -Force;
-            $context =@{from_language=$($env:from);to_language=$($env:to);style=$($env:style);user_specific_rules=$($env:user_specific_rules)}
+            $context =@{from_language=$($env:from);to_language=$($env:to);style=$($env:style);rules=$($env:rules)}
             try{
               if($env:useAzure.toLower() -eq "true" -or $env:useAzure -eq "1"){
                 gpt -system $env:system -prompt $_ -api_key $env:openai_api_key -OutFile $file -context $context -azure -model $env:model -endpoint $env:endpoint -verbose
