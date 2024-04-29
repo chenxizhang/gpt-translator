@@ -25,7 +25,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
       - name: translate
         uses: chenxizhang/gpt-translator@v2
         with:
@@ -116,7 +116,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
       - name: translate
         uses: chenxizhang/gpt-translator@v2
         with:
@@ -144,7 +144,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
       - name: translate
         uses: chenxizhang/gpt-translator@v2
         with:
