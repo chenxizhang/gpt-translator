@@ -63,7 +63,7 @@ runs:
         rules: ${{inputs.rules}}
       run: |
         Set-PSRepository -InstallationPolicy Trusted -Name PSGallery
-        Install-Module -Name code365scripts.openai
+        Install-Module -Name code365scripts.openai -RequiredVersion 2.0.2.2
         Import-Module code365scripts.openai
         $env:files | ConvertFrom-Json | ForEach-Object { 
           $langs = $env:to -split ","
